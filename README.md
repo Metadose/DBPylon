@@ -1,4 +1,4 @@
-SecureDB
+SQLGateway
 ========
 
-SecureDB is a middleware which facilitates the transactions between the database server and the application. The application could only communicate with the database using a client.
+SQLGateway is a middleware which acts as a gateway of a database in a private network to the public internet. This facilitates the transactions between the database server and the application.
