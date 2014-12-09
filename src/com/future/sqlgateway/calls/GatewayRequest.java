@@ -18,8 +18,6 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	public static final String PARAM_SQL = "sql";
 	public static final String PARAM_QUERY_TYPE = "queryType";
 
-	public static final String SEPARATOR_PIECES = "[=]";
-
 	private String username;
 	private String password;
 	private String targetTable;

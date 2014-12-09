@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.future.sqlgateway.calls.GatewayRequest;
+import com.future.sqlgateway.client.GatewayClient;
 import com.future.sqlgateway.util.Utilities;
 
 public class DAO {
@@ -182,7 +183,7 @@ public class DAO {
 			while (result.next()) {
 				String user = result.getString(GatewayRequest.COLUMN_USERNAME);
 				String pass = result.getString(GatewayRequest.COLUMN_PASSWORD);
-				creds = user + GatewayRequest.SEPARATOR_PIECES + pass;
+				creds = user + GatewayClient.SEPARATOR_PIECES + pass;
 			}
 			return creds;
 		} catch (SQLException e) {

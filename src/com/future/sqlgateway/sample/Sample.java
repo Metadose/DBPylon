@@ -1,23 +1,26 @@
 package com.future.sqlgateway.sample;
 
+import java.util.List;
+import java.util.Map;
+
 import com.future.sqlgateway.client.GatewayClient;
 
 public class Sample {
 
 	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		// SELECT Barcode,Name,Price FROM items WHERE Price > 5;
-		GatewayClient client = new GatewayClient("Test1", "Test1", "sales",
-				GatewayClient.QUERY_TYPE_UPDATE);
+		GatewayClient client = new GatewayClient(
+				"http://localhost:8080/tmp/Gateway?", "Test1", "Test1");
+		client.setQueryType(GatewayClient.QUERY_TYPE_SELECT);
+		client.setTargetTable("sales");
+		client.setConditions("SaleID = 12123455");
+		List<Map<String, String>> result = client.select();
 
-		// Target columns.
-		// Conditions.
-		// client.setTargetColumns("Barcode", "Name", "Price");
-		// client.setConditions("Price > 5", "Deleted = false");
-		client.setColumnAndValues("Name = 'Godzilla'", "Quantity = 500");
-		client.setConditions("SaleID = 1417418021031", "ItemID = 1");
-		client.execute();
-		long runtime = System.currentTimeMillis() - start;
-		System.out.println(runtime);
+		System.out
+				.println(result.toString() + "\n\n" + client.getRawResponse());
+
+		client.setQueryType(GatewayClient.QUERY_TYPE_UPDATE);
+		client.setColumnAndValues("Price = 999");
+		boolean success = client.update();
+		System.out.println("\n\n" + success);
 	}
 }

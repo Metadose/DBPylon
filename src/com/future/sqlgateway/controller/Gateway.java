@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.future.sqlgateway.calls.GatewayRequest;
 import com.future.sqlgateway.calls.GatewayResponse;
+import com.future.sqlgateway.client.GatewayClient;
 import com.future.sqlgateway.db.DAO;
 
 /**
@@ -72,7 +73,7 @@ public class Gateway extends HttpServlet {
 					for (String columnName : row.keySet()) {
 						Object value = row.get(columnName);
 						responseStr += columnName
-								+ GatewayRequest.SEPARATOR_PIECES
+								+ GatewayClient.SEPARATOR_PIECES
 								+ value.toString();
 						responseStr += ",";
 					}

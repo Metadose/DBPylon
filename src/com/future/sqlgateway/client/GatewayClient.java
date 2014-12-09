@@ -4,18 +4,22 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.future.sqlgateway.calls.GatewayRequest;
 import com.future.sqlgateway.util.TraceUtilities;
 
 public class GatewayClient {
 
-	private static final String QUERY_SERVER_URL = "http://555-callbackurl.rhcloud.com/Gateway?";
-
 	private static final String IDENTIFIER_COLUMN_LIST = "[COLUMN_LIST]";
 	private static final String IDENTIFIER_TABLE = "[TABLE]";
 	private static final String IDENTIFIER_COLUMN_AND_VALUE = "[COLUMN_AND_VALUE]";
 	private static final String IDENTIFIER_CONDITIONS = "[CONDITIONS]";
+
+	public static final String SEPARATOR_PIECES = "[=]";
 
 	private static final String TEMPLATE_INSERT = "INSERT INTO "
 			+ IDENTIFIER_TABLE + " " + IDENTIFIER_COLUMN_AND_VALUE;
@@ -33,10 +37,12 @@ public class GatewayClient {
 	public static final int QUERY_TYPE_UPDATE = 3;
 	public static final int QUERY_TYPE_DELETE = 4;
 
+	private String serverURL;
 	private String username;
 	private String password;
 	private String targetTable;
 	private String sql;
+	private String rawResponse;
 	private int queryType;
 	private String[] targetColumns;
 	private String[] columnAndValues;
@@ -51,6 +57,17 @@ public class GatewayClient {
 		setPassword(pass);
 		setTargetTable(table);
 		setQueryType(type);
+	}
+
+	public GatewayClient(String user, String pass) {
+		setUsername(user);
+		setPassword(pass);
+	}
+
+	public GatewayClient(String server, String user, String pass) {
+		setServerURL(server);
+		setUsername(user);
+		setPassword(pass);
 	}
 
 	public String getUsername() {
@@ -186,7 +203,7 @@ public class GatewayClient {
 
 		TraceUtilities.print(getSql());
 
-		String url = QUERY_SERVER_URL + GatewayRequest.PARAM_USERNAME + "="
+		String url = getServerURL() + GatewayRequest.PARAM_USERNAME + "="
 				+ getUsername() + "&" + GatewayRequest.PARAM_PASSWORD + "="
 				+ getPassword() + "&" + GatewayRequest.PARAM_QUERY_TYPE + "="
 				+ getQueryType() + "&" + GatewayRequest.PARAM_TARGET_TABLE
@@ -211,7 +228,7 @@ public class GatewayClient {
 				}
 				response += line + "\n";
 			}
-			System.out.print(response);
+			setRawResponse(response);
 			reader.close();
 			stream.close();
 			conn.disconnect();
@@ -375,5 +392,64 @@ public class GatewayClient {
 
 	public void setColumnAndValues(String... columnValue) {
 		this.columnAndValues = columnValue;
+	}
+
+	public String getRawResponse() {
+		return rawResponse;
+	}
+
+	public void setRawResponse(String rawResponse) {
+		this.rawResponse = rawResponse;
+	}
+
+	/**
+	 * Get the map of results.
+	 * 
+	 * @return
+	 */
+	public List<Map<String, String>> select() {
+		execute();
+		String rowList = getRawResponse();
+		List<Map<String, String>> valuesMapList = new ArrayList<Map<String, String>>();
+
+		for (String row : rowList.split("\n")) {
+			row = row.trim();
+
+			Map<String, String> colValuesMap = new HashMap<String, String>();
+			String[] columnList = row.split(",");
+			for (String column : columnList) {
+				String columnName = column.split(SEPARATOR_PIECES)[0];
+				String value = column.split(SEPARATOR_PIECES)[1];
+				colValuesMap.put(columnName, value);
+			}
+			valuesMapList.add(colValuesMap);
+		}
+		return valuesMapList;
+	}
+
+	public boolean executeUpdate() {
+		execute();
+		String response = getRawResponse().trim();
+		return response.equals("true") ? true : false;
+	}
+
+	public boolean update() {
+		return executeUpdate();
+	}
+
+	public boolean delete() {
+		return executeUpdate();
+	}
+
+	public boolean insert() {
+		return executeUpdate();
+	}
+
+	public String getServerURL() {
+		return serverURL;
+	}
+
+	public void setServerURL(String serverURL) {
+		this.serverURL = serverURL;
 	}
 }
