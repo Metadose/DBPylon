@@ -63,7 +63,7 @@ public class Gateway extends HttpServlet {
 				responseStr = "true";
 			}
 			// If request is select.
-			else if (request.isSelect()) {
+			else if (request.isSelect() || request.isExecuteSelect()) {
 				List<Map<String, Object>> rowList = dao.executeQuery(
 						targetTable, sql);
 				if (rowList == null) {
@@ -75,7 +75,9 @@ public class Gateway extends HttpServlet {
 						Object value = row.get(columnName);
 						responseStr += columnName
 								+ GatewayClient.SEPARATOR_PIECES
-								+ value.toString();
+								+ value.toString()
+								+ GatewayClient.SEPARATOR_PIECES
+								+ value.getClass().getSimpleName();
 						responseStr += ",";
 					}
 					responseStr += "\n";

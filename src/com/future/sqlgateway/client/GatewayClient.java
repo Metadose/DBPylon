@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ public class GatewayClient {
 	private static final String IDENTIFIER_COLUMN_AND_VALUE = "[COLUMN_AND_VALUE]";
 	private static final String IDENTIFIER_CONDITIONS = "[CONDITIONS]";
 
-	public static final String SEPARATOR_PIECES = "[=]";
+	public static final String SEPARATOR_PIECES = "::::";
 
 	private static final String TEMPLATE_INSERT = "INSERT INTO "
 			+ IDENTIFIER_TABLE + " " + IDENTIFIER_COLUMN_AND_VALUE;
@@ -37,6 +38,7 @@ public class GatewayClient {
 	public static final int QUERY_TYPE_UPDATE = 3;
 	public static final int QUERY_TYPE_DELETE = 4;
 	public static final int QUERY_TYPE_EXECUTE_QUERY = 5;
+	public static final int QUERY_TYPE_EXECUTE_SELECT = 6;
 
 	private String serverURL;
 	private String username;
@@ -408,20 +410,27 @@ public class GatewayClient {
 	 * 
 	 * @return
 	 */
-	public List<Map<String, String>> select() {
+	public List<Map<String, SimpleEntry<String, String>>> select() {
 		execute();
 		String rowList = getRawResponse();
-		List<Map<String, String>> valuesMapList = new ArrayList<Map<String, String>>();
+		List<Map<String, SimpleEntry<String, String>>> valuesMapList = new ArrayList<Map<String, SimpleEntry<String, String>>>();
 
+		if (rowList.isEmpty()) {
+			return new ArrayList<Map<String, SimpleEntry<String, String>>>();
+		}
 		for (String row : rowList.split("\n")) {
 			row = row.trim();
 
-			Map<String, String> colValuesMap = new HashMap<String, String>();
+			Map<String, SimpleEntry<String, String>> colValuesMap = new HashMap<String, SimpleEntry<String, String>>();
 			String[] columnList = row.split(",");
 			for (String column : columnList) {
 				String columnName = column.split(SEPARATOR_PIECES)[0];
 				String value = column.split(SEPARATOR_PIECES)[1];
-				colValuesMap.put(columnName, value);
+				String dataType = column.split(SEPARATOR_PIECES)[2];
+				SimpleEntry<String, String> entry = new SimpleEntry<String, String>(
+						value, dataType);
+
+				colValuesMap.put(columnName, entry);
 			}
 			valuesMapList.add(colValuesMap);
 		}
@@ -460,5 +469,13 @@ public class GatewayClient {
 		execute();
 		String response = getRawResponse().trim();
 		return response.equals("true") ? true : false;
+	}
+
+	public List<Map<String, SimpleEntry<String, String>>> executeSelect(
+			String table, String sqlString) {
+		setTargetTable(table);
+		setSql(sqlString);
+		setQueryType(QUERY_TYPE_EXECUTE_SELECT);
+		return select();
 	}
 }

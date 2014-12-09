@@ -108,9 +108,10 @@ public class DAO {
 	}
 
 	private List<String> getColumnNames(String table, String sql) {
-		int selectIndex = sql.indexOf("SELECT") + "SELECT".length();
-		int fromIndex = sql.indexOf("FROM") + "FROM".length();
-		sql = sql.substring(selectIndex, fromIndex).replace("FROM", "")
+		sql = sql.toLowerCase();
+		int selectIndex = sql.indexOf("select") + "select".length();
+		int fromIndex = sql.indexOf("from") + "from".length();
+		sql = sql.substring(selectIndex, fromIndex).replace("from", "")
 				.replace(" ", "");
 
 		// If sql is asterisk, get all column names.

@@ -58,8 +58,7 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	 */
 	public boolean hasValidParams() {
 		if (isValid(getUsername()) && isValid(getPassword())
-				&& isValid(getSql()) && isValid(getTargetTable())
-				&& getQueryType() != 0) {
+				&& isValid(getSql())) {
 			return true;
 		}
 		return false;
@@ -110,7 +109,13 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	}
 
 	public boolean isExecuteQuery() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_EXECUTE_QUERY ? true : false;
+		return getQueryType() == GatewayClient.QUERY_TYPE_EXECUTE_QUERY ? true
+				: false;
+	}
+
+	public boolean isExecuteSelect() {
+		return getQueryType() == GatewayClient.QUERY_TYPE_EXECUTE_SELECT ? true
+				: false;
 	}
 
 	public int getQueryType() {
