@@ -17,6 +17,8 @@ public class GatewayClient {
 	private static final String IDENTIFIER_COLUMN_AND_VALUE = "[COLUMN_AND_VALUE]";
 	private static final String IDENTIFIER_CONDITIONS = "[CONDITIONS]";
 
+	private static final String TEMPLATE_INSERT = "INSERT INTO "
+			+ IDENTIFIER_TABLE + " " + IDENTIFIER_COLUMN_AND_VALUE;
 	private static final String TEMPLATE_SELECT = "SELECT "
 			+ IDENTIFIER_COLUMN_LIST + " FROM " + IDENTIFIER_TABLE + " "
 			+ IDENTIFIER_CONDITIONS;
@@ -26,9 +28,10 @@ public class GatewayClient {
 			+ " SET " + IDENTIFIER_COLUMN_AND_VALUE + " "
 			+ IDENTIFIER_CONDITIONS;
 
-	public static final int QUERY_TYPE_SELECT = 1;
-	public static final int QUERY_TYPE_UPDATE = 2;
-	public static final int QUERY_TYPE_DELETE = 3;
+	public static final int QUERY_TYPE_INSERT = 1;
+	public static final int QUERY_TYPE_SELECT = 2;
+	public static final int QUERY_TYPE_UPDATE = 3;
+	public static final int QUERY_TYPE_DELETE = 4;
 
 	private String username;
 	private String password;
@@ -171,7 +174,9 @@ public class GatewayClient {
 	 * Create a connection to the gateway and output the result.
 	 */
 	public void execute() {
-		if (getQueryType() == QUERY_TYPE_SELECT) {
+		if (getQueryType() == QUERY_TYPE_INSERT) {
+			setSql(generateInsertSQL());
+		} else if (getQueryType() == QUERY_TYPE_SELECT) {
 			setSql(generateSelectSQL());
 		} else if (getQueryType() == QUERY_TYPE_UPDATE) {
 			setSql(generateUpdateSQL());
@@ -213,6 +218,52 @@ public class GatewayClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String generateInsertSQL() {
+		// INSERT INTO table_name (column1, column2, column3,...) VALUES
+		// (value1, value2, value3,...)
+
+		String table = getTargetTable();
+		String sql = TEMPLATE_INSERT;
+		String[] columnAndVals = getColumnAndValues();
+
+		// Replace table.
+		if (table == null || table.isEmpty() || columnAndVals == null
+				|| columnAndVals.length == 0) {
+			return "";
+		}
+
+		sql = sql.replace(IDENTIFIER_TABLE, table);
+
+		String columnStr = "(";
+		String valuesStr = "VALUES (";
+		int i = 0;
+
+		// Loop through each condition.
+		for (String colAndVal : columnAndVals) {
+			String column = colAndVal.split("=")[0];
+			String value = colAndVal.split("=")[1];
+
+			columnStr += column;
+			valuesStr += value;
+
+			// If there's still a next element, add an AND.
+			try {
+				if (columnAndVals[i + 1] != null) {
+					columnStr += ", ";
+					valuesStr += ", ";
+				}
+			} catch (Exception e) {
+				;
+			}
+			i++;
+		}
+		columnStr += ")";
+		valuesStr += ")";
+		sql = sql.replace(IDENTIFIER_COLUMN_AND_VALUE, columnStr + valuesStr);
+
+		return sql;
 	}
 
 	private String generateDeleteSQL() {

@@ -107,6 +107,10 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 		return getQueryType() == GatewayClient.QUERY_TYPE_SELECT ? true : false;
 	}
 
+	public boolean isInsert() {
+		return getQueryType() == GatewayClient.QUERY_TYPE_INSERT ? true : false;
+	}
+
 	public int getQueryType() {
 		return queryType;
 	}
@@ -122,4 +126,5 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	public void setTargetTable(String targetTable) {
 		this.targetTable = targetTable;
 	}
+
 }
