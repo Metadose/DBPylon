@@ -3,9 +3,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%
-	String responseStr = (String) request.getAttribute(Gateway.PARAM_RESPONSE);
-long start = (Long) request.getAttribute(Gateway.PARAM_START_TIME);
-long end = System.currentTimeMillis();
-long runtime = end - start;
+String responseStr = (String) request.getAttribute(Gateway.PARAM_RESPONSE);
 %>
-<%=responseStr + "<br>[END]" + runtime + " milliseconds"%>
+<%=responseStr%>

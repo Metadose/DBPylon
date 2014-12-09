@@ -10,7 +10,7 @@ import com.future.sqlgateway.util.TraceUtilities;
 
 public class GatewayClient {
 
-	private static final String QUERY_SERVER_URL = "http://localhost:8080/tmp/Gateway?";
+	private static final String QUERY_SERVER_URL = "http://555-callbackurl.rhcloud.com/Gateway?";
 
 	private static final String IDENTIFIER_COLUMN_LIST = "[COLUMN_LIST]";
 	private static final String IDENTIFIER_TABLE = "[TABLE]";

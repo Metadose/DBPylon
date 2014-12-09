@@ -22,7 +22,6 @@ import com.future.sqlgateway.db.DAO;
  */
 public class Gateway extends HttpServlet {
 	public static final String PARAM_RESPONSE = "response";
-	public static final String PARAM_START_TIME = "startTime";
 	private static final String JSP_EMPTY = "empty.jsp";
 	private static final String JSP_RESPONSE = "response.jsp";
 	private static final long serialVersionUID = 1L;
@@ -98,7 +97,6 @@ public class Gateway extends HttpServlet {
 			RequestDispatcher dispatcher = request
 					.getRequestDispatcher(JSP_RESPONSE);
 			request.setAttribute(PARAM_RESPONSE, responseStr);
-			request.setAttribute(PARAM_START_TIME, start);
 			dispatcher.forward(request, response);
 		} catch (ServletException e) {
 			e.printStackTrace();
