@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.future.sqlgateway.calls.GatewayRequest;
+import com.future.sqlgateway.util.TraceUtilities;
 
 public class GatewayClient {
 
@@ -13,10 +14,21 @@ public class GatewayClient {
 
 	private static final String IDENTIFIER_COLUMN_LIST = "[COLUMN_LIST]";
 	private static final String IDENTIFIER_TABLE = "[TABLE]";
+	private static final String IDENTIFIER_COLUMN_AND_VALUE = "[COLUMN_AND_VALUE]";
 	private static final String IDENTIFIER_CONDITIONS = "[CONDITIONS]";
+
 	private static final String TEMPLATE_SELECT = "SELECT "
 			+ IDENTIFIER_COLUMN_LIST + " FROM " + IDENTIFIER_TABLE + " "
 			+ IDENTIFIER_CONDITIONS;
+	private static final String TEMPLATE_DELETE = "DELETE FROM "
+			+ IDENTIFIER_TABLE + " " + IDENTIFIER_CONDITIONS;
+	private static final String TEMPLATE_UPDATE = "UPDATE " + IDENTIFIER_TABLE
+			+ " SET " + IDENTIFIER_COLUMN_AND_VALUE + " "
+			+ IDENTIFIER_CONDITIONS;
+
+	public static final int QUERY_TYPE_SELECT = 1;
+	public static final int QUERY_TYPE_UPDATE = 2;
+	public static final int QUERY_TYPE_DELETE = 3;
 
 	private String username;
 	private String password;
@@ -24,6 +36,7 @@ public class GatewayClient {
 	private String sql;
 	private int queryType;
 	private String[] targetColumns;
+	private String[] columnAndValues;
 	private String[] conditions;
 
 	public GatewayClient() {
@@ -97,7 +110,12 @@ public class GatewayClient {
 		this.conditions = conditions;
 	}
 
-	public String generateSQL() {
+	/**
+	 * Generate the sql based on the constructed object.
+	 * 
+	 * @return
+	 */
+	public String generateSelectSQL() {
 		// SELECT [COLUMN_LIST] FROM [TABLE] [CONDITIONS]
 		String table = getTargetTable();
 		String sql = TEMPLATE_SELECT;
@@ -149,8 +167,19 @@ public class GatewayClient {
 		return sql;
 	}
 
+	/**
+	 * Create a connection to the gateway and output the result.
+	 */
 	public void execute() {
-		setSql(generateSQL());
+		if (getQueryType() == QUERY_TYPE_SELECT) {
+			setSql(generateSelectSQL());
+		} else if (getQueryType() == QUERY_TYPE_UPDATE) {
+			setSql(generateUpdateSQL());
+		} else if (getQueryType() == QUERY_TYPE_DELETE) {
+			setSql(generateDeleteSQL());
+		}
+
+		TraceUtilities.print(getSql());
 
 		String url = QUERY_SERVER_URL + GatewayRequest.PARAM_USERNAME + "="
 				+ getUsername() + "&" + GatewayRequest.PARAM_PASSWORD + "="
@@ -158,7 +187,9 @@ public class GatewayClient {
 				+ getQueryType() + "&" + GatewayRequest.PARAM_TARGET_TABLE
 				+ "=" + getTargetTable() + "&" + GatewayRequest.PARAM_SQL + "="
 				+ getSql();
+
 		url = url.replaceAll(" ", "%20");
+
 		try {
 			URL urlCall = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection) urlCall
@@ -182,5 +213,116 @@ public class GatewayClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String generateDeleteSQL() {
+		// DELETE FROM [TABLE] [CONDITIONS]
+		String table = getTargetTable();
+		String sql = TEMPLATE_DELETE;
+		String[] conds = getConditions();
+
+		// Replace table.
+		if (table == null || table.isEmpty()) {
+			return "";
+		}
+		sql = sql.replace(IDENTIFIER_TABLE, table);
+
+		// Set the conditions.
+		if (conds != null) {
+			String condsStr = "WHERE ";
+			int index = 0;
+
+			// Loop through each condition.
+			for (String condition : conds) {
+				condsStr += condition;
+
+				// If there's still a next element, add an AND.
+				try {
+					if (conds[index + 1] != null) {
+						condsStr += " AND ";
+					}
+				} catch (Exception e) {
+					;
+				}
+				index++;
+			}
+			sql = sql.replace(IDENTIFIER_CONDITIONS, condsStr);
+		} else {
+			sql = sql.replace(IDENTIFIER_CONDITIONS, "");
+		}
+
+		return sql;
+	}
+
+	private String generateUpdateSQL() {
+		// UPDATE table_name
+		// SET column1=value, column2=value2,...
+		// WHERE some_column=some_value
+
+		String table = getTargetTable();
+		String sql = TEMPLATE_UPDATE;
+		String[] columnAndVals = getColumnAndValues();
+		String[] conds = getConditions();
+
+		// Replace table.
+		if (table == null || table.isEmpty() || columnAndVals == null
+				|| columnAndVals.length == 0) {
+			return "";
+		}
+
+		sql = sql.replace(IDENTIFIER_TABLE, table);
+
+		String columnValStr = "";
+		int i = 0;
+
+		// Loop through each condition.
+		for (String colAndVal : columnAndVals) {
+			columnValStr += colAndVal;
+
+			// If there's still a next element, add an AND.
+			try {
+				if (columnAndVals[i + 1] != null) {
+					columnValStr += ", ";
+				}
+			} catch (Exception e) {
+				;
+			}
+			i++;
+		}
+		sql = sql.replace(IDENTIFIER_COLUMN_AND_VALUE, columnValStr);
+
+		// Set the conditions.
+		if (conds != null) {
+			String condsStr = "WHERE ";
+			int index = 0;
+
+			// Loop through each condition.
+			for (String condition : conds) {
+				condsStr += condition;
+
+				// If there's still a next element, add an AND.
+				try {
+					if (conds[index + 1] != null) {
+						condsStr += " AND ";
+					}
+				} catch (Exception e) {
+					;
+				}
+				index++;
+			}
+			sql = sql.replace(IDENTIFIER_CONDITIONS, condsStr);
+		} else {
+			sql = sql.replace(IDENTIFIER_CONDITIONS, "");
+		}
+
+		return sql;
+	}
+
+	public String[] getColumnAndValues() {
+		return columnAndValues;
+	}
+
+	public void setColumnAndValues(String... columnValue) {
+		this.columnAndValues = columnValue;
 	}
 }

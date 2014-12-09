@@ -1,2 +1,2 @@
-SecureDB
+SQLGateway
 ========

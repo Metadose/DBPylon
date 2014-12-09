@@ -1,11 +1,9 @@
 package com.future.sqlgateway.calls;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.future.sqlgateway.db.ColumnValueTypeTriple;
+import com.future.sqlgateway.client.GatewayClient;
 import com.future.sqlgateway.db.DAO;
 import com.future.sqlgateway.util.RequestUtilities;
 
@@ -20,20 +18,13 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	public static final String PARAM_SQL = "sql";
 	public static final String PARAM_QUERY_TYPE = "queryType";
 
-	public static final String DELIMITER_TABLE = "[TABLE]";
-	public static final String SEPARATOR_RAW_VALUES = "[1qaz2wsx]";
 	public static final String SEPARATOR_PIECES = "[=]";
-
-	public static final int QUERY_TYPE_SELECT = 1;
-	public static final int QUERY_TYPE_UPDATE = 2;
 
 	private String username;
 	private String password;
 	private String targetTable;
 	private String sql;
 	private int queryType;
-
-	private Map<Integer, ColumnValueTypeTriple> processedValues;
 
 	public GatewayRequest(HttpServletRequest request) {
 		super(request);
@@ -104,21 +95,16 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 		this.sql = sql;
 	}
 
-	public Map<Integer, ColumnValueTypeTriple> getProcessedValues() {
-		return processedValues;
-	}
-
-	public void setProcessedValues(
-			Map<Integer, ColumnValueTypeTriple> processedValues) {
-		this.processedValues = processedValues;
-	}
-
 	public boolean isUpdate() {
-		return getQueryType() == QUERY_TYPE_UPDATE ? true : false;
+		return getQueryType() == GatewayClient.QUERY_TYPE_UPDATE ? true : false;
+	}
+
+	public boolean isDelete() {
+		return getQueryType() == GatewayClient.QUERY_TYPE_DELETE ? true : false;
 	}
 
 	public boolean isSelect() {
-		return getQueryType() == QUERY_TYPE_SELECT ? true : false;
+		return getQueryType() == GatewayClient.QUERY_TYPE_SELECT ? true : false;
 	}
 
 	public int getQueryType() {
