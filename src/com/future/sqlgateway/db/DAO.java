@@ -162,6 +162,11 @@ public class DAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
