@@ -54,7 +54,8 @@ public class Gateway extends HttpServlet {
 			String responseStr = "";
 
 			// If request is update or delete.
-			if (request.isInsert() || request.isUpdate() || request.isDelete()) {
+			if (request.isInsert() || request.isUpdate() || request.isDelete()
+					|| request.isExecuteQuery()) {
 				boolean success = dao.executeUpdate(sql);
 				if (!success) {
 					error(request, response);

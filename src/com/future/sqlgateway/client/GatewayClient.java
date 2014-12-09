@@ -36,6 +36,7 @@ public class GatewayClient {
 	public static final int QUERY_TYPE_SELECT = 2;
 	public static final int QUERY_TYPE_UPDATE = 3;
 	public static final int QUERY_TYPE_DELETE = 4;
+	public static final int QUERY_TYPE_EXECUTE_QUERY = 5;
 
 	private String serverURL;
 	private String username;
@@ -451,5 +452,13 @@ public class GatewayClient {
 
 	public void setServerURL(String serverURL) {
 		this.serverURL = serverURL;
+	}
+
+	public boolean executeQuery(String sql) {
+		setSql(sql);
+		setQueryType(QUERY_TYPE_EXECUTE_QUERY);
+		execute();
+		String response = getRawResponse().trim();
+		return response.equals("true") ? true : false;
 	}
 }
