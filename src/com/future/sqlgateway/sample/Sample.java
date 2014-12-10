@@ -15,6 +15,7 @@ public class Sample {
 		// client.setTargetTable("sales");
 		List<Map<String, SimpleEntry<String, String>>> rows = client
 				.executeSelect("auditlogs", "select * from auditlogs");
+		List<String> columnList = client.getColumnList("auditlogs");
 
 		System.out.println(client.getRawResponse());
 	}

@@ -58,7 +58,7 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	 */
 	public boolean hasValidParams() {
 		if (isValid(getUsername()) && isValid(getPassword())
-				&& isValid(getSql())) {
+				&& (isGetColumnList() || isValid(getSql()))) {
 			return true;
 		}
 		return false;
@@ -106,6 +106,11 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 
 	public boolean isInsert() {
 		return getQueryType() == GatewayClient.QUERY_TYPE_INSERT ? true : false;
+	}
+
+	public boolean isGetColumnList() {
+		return getQueryType() == GatewayClient.QUERY_TYPE_GET_COLUMN_LIST ? true
+				: false;
 	}
 
 	public boolean isExecuteQuery() {

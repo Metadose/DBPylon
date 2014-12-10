@@ -30,6 +30,32 @@ public class DAO {
 		}
 	}
 
+	/**
+	 * Get all columns in a table from connection.
+	 * 
+	 * @param table
+	 * @return
+	 */
+	public String getColumnListAsString(String table) {
+		String columns = "";
+		try {
+			PreparedStatement stmt = connection
+					.prepareStatement("SELECT * FROM " + table);
+			ResultSet result = stmt.executeQuery();
+			ResultSetMetaData metaData = result.getMetaData();
+			int columnCount = metaData.getColumnCount();
+			// The column count starts from 1.
+			for (int i = 1; i < columnCount + 1; i++) {
+				String colName = metaData.getColumnName(i);
+				columns += colName + ",";
+			}
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return columns;
+	}
+
 	public static void main(String[] args) {
 		;
 	}

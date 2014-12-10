@@ -38,6 +38,7 @@ public class GatewayClient {
 	public static final int QUERY_TYPE_DELETE = 4;
 	public static final int QUERY_TYPE_EXECUTE_QUERY = 5;
 	public static final int QUERY_TYPE_EXECUTE_SELECT = 6;
+	public static final int QUERY_TYPE_GET_COLUMN_LIST = 7;
 
 	private String serverURL;
 	private String username;
@@ -476,5 +477,23 @@ public class GatewayClient {
 		setSql(sqlString);
 		setQueryType(QUERY_TYPE_EXECUTE_SELECT);
 		return select();
+	}
+
+	/**
+	 * Get list of columns in the database table.
+	 * 
+	 * @param table
+	 * @return
+	 */
+	public List<String> getColumnList(String table) {
+		setTargetTable(table);
+		setQueryType(QUERY_TYPE_GET_COLUMN_LIST);
+		execute();
+
+		List<String> columnList = new ArrayList<String>();
+		for (String column : getRawResponse().split(",")) {
+			columnList.add(column);
+		}
+		return columnList;
 	}
 }

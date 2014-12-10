@@ -83,6 +83,10 @@ public class Gateway extends HttpServlet {
 					responseStr += "\n";
 				}
 			}
+			// If request is just to get the list of columns in a table.
+			else if (request.isGetColumnList()) {
+				responseStr = dao.getColumnListAsString(targetTable);
+			}
 			respond(request, response, responseStr);
 		}
 	}
