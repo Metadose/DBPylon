@@ -53,7 +53,7 @@ public class DAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return columns;
+		return columns.trim().substring(0, columns.length() - 1);
 	}
 
 	public static void main(String[] args) {
