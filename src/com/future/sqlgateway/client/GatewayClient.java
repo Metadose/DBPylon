@@ -491,8 +491,8 @@ public class GatewayClient {
 		execute();
 
 		List<String> columnList = new ArrayList<String>();
-		for (String column : getRawResponse().split(",")) {
-			columnList.add(column);
+		for (String column : getRawResponse().split("\n")[0].split(",")) {
+			columnList.add(column.trim());
 		}
 		return columnList;
 	}
