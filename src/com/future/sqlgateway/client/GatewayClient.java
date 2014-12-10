@@ -213,7 +213,8 @@ public class GatewayClient {
 				+ "=" + getTargetTable() + "&" + GatewayRequest.PARAM_SQL + "="
 				+ getSql();
 
-		url = url.replaceAll(" ", "%20");
+		url = url.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n").replaceAll(" ",
+				"%20");
 
 		try {
 			URL urlCall = new URL(url);
