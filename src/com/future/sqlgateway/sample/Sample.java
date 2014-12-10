@@ -14,7 +14,7 @@ public class Sample {
 		// client.setQueryType(GatewayClient.QUERY_TYPE_SELECT);
 		// client.setTargetTable("sales");
 		List<Map<String, SimpleEntry<String, String>>> rows = client
-				.executeSelect("sales", "select * from sales");
+				.executeSelect("auditlogs", "select * from auditlogs");
 
 		System.out.println(client.getRawResponse());
 	}

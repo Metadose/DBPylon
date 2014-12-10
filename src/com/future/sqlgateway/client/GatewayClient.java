@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.future.sqlgateway.calls.GatewayRequest;
-import com.future.sqlgateway.util.TraceUtilities;
 
 public class GatewayClient {
 
@@ -204,7 +203,7 @@ public class GatewayClient {
 			setSql(generateDeleteSQL());
 		}
 
-		TraceUtilities.print(getSql());
+		// TraceUtilities.print(getSql());
 
 		String url = getServerURL() + GatewayRequest.PARAM_USERNAME + "="
 				+ getUsername() + "&" + GatewayRequest.PARAM_PASSWORD + "="

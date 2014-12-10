@@ -44,7 +44,6 @@ public class Gateway extends HttpServlet {
 	private void process(GatewayRequest request, GatewayResponse response) {
 		// Check if request is authorized.
 		// Check if request has valid parameters, i.e., complete.
-		long start = System.currentTimeMillis();
 
 		if (request.hasValidParams() && request.isAuthorized()) {
 			String targetTable = request.getTargetTable();
@@ -75,7 +74,8 @@ public class Gateway extends HttpServlet {
 						Object value = row.get(columnName);
 						responseStr += columnName
 								+ GatewayClient.SEPARATOR_PIECES
-								+ value.toString()
+								+ value.toString().replaceAll(
+										"(\\r|\\n|\\r\\n)+", "\\\\n")
 								+ GatewayClient.SEPARATOR_PIECES
 								+ value.getClass().getSimpleName();
 						responseStr += ",";
@@ -83,7 +83,7 @@ public class Gateway extends HttpServlet {
 					responseStr += "\n";
 				}
 			}
-			respond(request, response, responseStr, start);
+			respond(request, response, responseStr);
 		}
 	}
 
@@ -96,7 +96,7 @@ public class Gateway extends HttpServlet {
 	 * @param start
 	 */
 	private void respond(GatewayRequest request, GatewayResponse response,
-			String responseStr, long start) {
+			String responseStr) {
 		try {
 			RequestDispatcher dispatcher = request
 					.getRequestDispatcher(JSP_RESPONSE);
