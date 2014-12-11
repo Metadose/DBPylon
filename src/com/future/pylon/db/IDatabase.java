@@ -3,6 +3,8 @@ package com.future.pylon.db;
 public interface IDatabase {
 	public String getDriver();
 
+	public String getProtocol();
+
 	public String getUrl();
 
 	public String getPort();
@@ -11,5 +13,5 @@ public interface IDatabase {
 
 	public String getPassword();
 
-	public String getType();
+	public int getType();
 }

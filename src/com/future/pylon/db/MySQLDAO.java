@@ -16,6 +16,12 @@ import com.future.pylon.client.Query;
 import com.future.pylon.controller.PylonController;
 import com.future.pylon.util.Utilities;
 
+/**
+ * Data Access Object for MySQL.
+ * 
+ * @author Victorio Cebedo II
+ * 
+ */
 public class MySQLDAO {
 
 	private Connection connection;
@@ -24,10 +30,9 @@ public class MySQLDAO {
 		try {
 			MySQLDB sqlDB = new MySQLDB();
 			Class.forName(sqlDB.getDriver());
-			connection = DriverManager.getConnection(
-					"jdbc:mysql://" + sqlDB.getUrl() + ":" + sqlDB.getPort()
-							+ "/" + dbName, sqlDB.getUsername(),
-					sqlDB.getPassword());
+			connection = DriverManager.getConnection(sqlDB.getProtocol()
+					+ "://" + sqlDB.getUrl() + ":" + sqlDB.getPort() + "/"
+					+ dbName, sqlDB.getUsername(), sqlDB.getPassword());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -56,7 +61,21 @@ public class MySQLDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		tryConnectionClose();
 		return columns.trim().substring(0, columns.length() - 1);
+	}
+
+	/**
+	 * Try to close the connection of not yet closed.
+	 */
+	private void tryConnectionClose() {
+		try {
+			if (!connection.isClosed()) {
+				connection.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private Map<String, Object> constructResultMap(
@@ -124,11 +143,7 @@ public class MySQLDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		tryConnectionClose();
 		return null;
 	}
 
@@ -189,11 +204,7 @@ public class MySQLDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		tryConnectionClose();
 		return false;
 	}
 
@@ -211,10 +222,14 @@ public class MySQLDAO {
 				String pass = result.getString(Query.COLUMN_PASSWORD);
 				creds = user + PylonController.SEPARATOR_PIECES + pass;
 			}
+			result.close();
+			stmt.close();
+			connection.close();
 			return creds;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		tryConnectionClose();
 		return "";
 	}
 }
