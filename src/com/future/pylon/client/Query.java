@@ -1,13 +1,12 @@
-package com.future.sqlgateway.calls;
+package com.future.pylon.client;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.future.sqlgateway.client.GatewayClient;
-import com.future.sqlgateway.db.DAO;
-import com.future.sqlgateway.util.RequestUtilities;
+import com.future.pylon.db.MySQLDAO;
+import com.future.pylon.util.RequestUtilities;
 
-public class GatewayRequest extends HttpServletRequestWrapper {
+public class Query extends HttpServletRequestWrapper {
 	public static final String COLUMN_USERNAME = "Username";
 	public static final String COLUMN_PASSWORD = "Password";
 	public static final String COLUMN_DATE_TIME = "DateTime";
@@ -24,7 +23,7 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	private String sql;
 	private int queryType;
 
-	public GatewayRequest(HttpServletRequest request) {
+	public Query(HttpServletRequest request) {
 		super(request);
 		setUsername(RequestUtilities.getParameter(request, PARAM_USERNAME));
 		setPassword(RequestUtilities.getParameter(request, PARAM_PASSWORD));
@@ -43,7 +42,7 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 		String usr = getUsername();
 		String pw = getPassword();
 
-		DAO dao = new DAO();
+		MySQLDAO dao = new MySQLDAO();
 		String creds = dao.getCredentials(usr, pw);
 		if (creds.isEmpty()) {
 			return false;
@@ -93,33 +92,33 @@ public class GatewayRequest extends HttpServletRequestWrapper {
 	}
 
 	public boolean isUpdate() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_UPDATE ? true : false;
+		return getQueryType() == PylonClient.QUERY_TYPE_UPDATE ? true : false;
 	}
 
 	public boolean isDelete() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_DELETE ? true : false;
+		return getQueryType() == PylonClient.QUERY_TYPE_DELETE ? true : false;
 	}
 
 	public boolean isSelect() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_SELECT ? true : false;
+		return getQueryType() == PylonClient.QUERY_TYPE_SELECT ? true : false;
 	}
 
 	public boolean isInsert() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_INSERT ? true : false;
+		return getQueryType() == PylonClient.QUERY_TYPE_INSERT ? true : false;
 	}
 
 	public boolean isGetColumnList() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_GET_COLUMN_LIST ? true
+		return getQueryType() == PylonClient.QUERY_TYPE_GET_COLUMN_LIST ? true
 				: false;
 	}
 
 	public boolean isExecuteQuery() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_EXECUTE_QUERY ? true
+		return getQueryType() == PylonClient.QUERY_TYPE_EXECUTE_QUERY ? true
 				: false;
 	}
 
 	public boolean isExecuteSelect() {
-		return getQueryType() == GatewayClient.QUERY_TYPE_EXECUTE_SELECT ? true
+		return getQueryType() == PylonClient.QUERY_TYPE_EXECUTE_SELECT ? true
 				: false;
 	}
 

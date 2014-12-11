@@ -11,12 +11,12 @@
   </welcome-file-list>
   <servlet>
     <description></description>
-    <display-name>Gateway</display-name>
-    <servlet-name>Gateway</servlet-name>
-    <servlet-class>com.future.sqlgateway.controller.Gateway</servlet-class>
+    <display-name>PylonController</display-name>
+    <servlet-name>PylonController</servlet-name>
+    <servlet-class>com.future.pylon.controller.PylonController</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Gateway</servlet-name>
-    <url-pattern>/Gateway</url-pattern>
+    <servlet-name>PylonController</servlet-name>
+    <url-pattern>/PylonController</url-pattern>
   </servlet-mapping>
 </web-app>

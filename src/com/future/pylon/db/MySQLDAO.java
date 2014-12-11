@@ -1,4 +1,4 @@
-package com.future.sqlgateway.db;
+package com.future.pylon.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,15 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.future.sqlgateway.calls.GatewayRequest;
-import com.future.sqlgateway.client.GatewayClient;
-import com.future.sqlgateway.util.Utilities;
+import com.future.pylon.client.Query;
+import com.future.pylon.controller.PylonController;
+import com.future.pylon.util.Utilities;
 
-public class DAO {
+public class MySQLDAO {
 
 	private Connection connection;
 
-	public DAO() {
+	public MySQLDAO() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection(
@@ -64,7 +64,7 @@ public class DAO {
 			Map<String, Object> resultMap, String column, ResultSet result) {
 		try {
 			Object object;
-			if (column.equals(GatewayRequest.COLUMN_DATE_TIME)) {
+			if (column.equals(Query.COLUMN_DATE_TIME)) {
 				object = result.getTimestamp(column);
 			} else {
 				object = result.getObject(column);
@@ -208,9 +208,9 @@ public class DAO {
 
 			String creds = "";
 			while (result.next()) {
-				String user = result.getString(GatewayRequest.COLUMN_USERNAME);
-				String pass = result.getString(GatewayRequest.COLUMN_PASSWORD);
-				creds = user + GatewayClient.SEPARATOR_PIECES + pass;
+				String user = result.getString(Query.COLUMN_USERNAME);
+				String pass = result.getString(Query.COLUMN_PASSWORD);
+				creds = user + PylonController.SEPARATOR_PIECES + pass;
 			}
 			return creds;
 		} catch (SQLException e) {

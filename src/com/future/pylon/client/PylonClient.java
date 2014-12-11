@@ -1,4 +1,4 @@
-package com.future.sqlgateway.client;
+package com.future.pylon.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -10,16 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.future.sqlgateway.calls.GatewayRequest;
+import com.future.pylon.controller.PylonController;
 
-public class GatewayClient {
+public class PylonClient {
 
 	private static final String IDENTIFIER_COLUMN_LIST = "[COLUMN_LIST]";
 	private static final String IDENTIFIER_TABLE = "[TABLE]";
 	private static final String IDENTIFIER_COLUMN_AND_VALUE = "[COLUMN_AND_VALUE]";
 	private static final String IDENTIFIER_CONDITIONS = "[CONDITIONS]";
-
-	public static final String SEPARATOR_PIECES = "::::";
 
 	private static final String TEMPLATE_INSERT = "INSERT INTO "
 			+ IDENTIFIER_TABLE + " " + IDENTIFIER_COLUMN_AND_VALUE;
@@ -32,13 +30,13 @@ public class GatewayClient {
 			+ " SET " + IDENTIFIER_COLUMN_AND_VALUE + " "
 			+ IDENTIFIER_CONDITIONS;
 
-	public static final int QUERY_TYPE_INSERT = 1;
-	public static final int QUERY_TYPE_SELECT = 2;
-	public static final int QUERY_TYPE_UPDATE = 3;
-	public static final int QUERY_TYPE_DELETE = 4;
-	public static final int QUERY_TYPE_EXECUTE_QUERY = 5;
-	public static final int QUERY_TYPE_EXECUTE_SELECT = 6;
-	public static final int QUERY_TYPE_GET_COLUMN_LIST = 7;
+	protected static final int QUERY_TYPE_INSERT = 1;
+	protected static final int QUERY_TYPE_SELECT = 2;
+	protected static final int QUERY_TYPE_UPDATE = 3;
+	protected static final int QUERY_TYPE_DELETE = 4;
+	protected static final int QUERY_TYPE_EXECUTE_QUERY = 5;
+	protected static final int QUERY_TYPE_EXECUTE_SELECT = 6;
+	protected static final int QUERY_TYPE_GET_COLUMN_LIST = 7;
 
 	private String serverURL;
 	private String username;
@@ -51,85 +49,81 @@ public class GatewayClient {
 	private String[] columnAndValues;
 	private String[] conditions;
 
-	public GatewayClient() {
+	public PylonClient() {
 		;
 	}
 
-	public GatewayClient(String user, String pass, String table, int type) {
+	public PylonClient(String user, String pass, String table, int type) {
 		setUsername(user);
 		setPassword(pass);
 		setTargetTable(table);
 		setQueryType(type);
 	}
 
-	public GatewayClient(String user, String pass) {
+	public PylonClient(String user, String pass) {
 		setUsername(user);
 		setPassword(pass);
 	}
 
-	public GatewayClient(String server, String user, String pass) {
+	public PylonClient(String server, String user, String pass) {
 		setServerURL(server);
 		setUsername(user);
 		setPassword(pass);
 	}
 
-	public String getUsername() {
+	private String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	private void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	private String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	private void setPassword(String password) {
 		this.password = password;
 	}
 
-	public String getTargetTable() {
+	private String getTargetTable() {
 		return targetTable;
 	}
 
-	public void setTargetTable(String targetTable) {
+	private void setTargetTable(String targetTable) {
 		this.targetTable = targetTable;
 	}
 
-	public String getSql() {
+	private String getSql() {
 		return sql;
 	}
 
-	public void setSql(String sql) {
+	private void setSql(String sql) {
 		this.sql = sql;
 	}
 
-	public int getQueryType() {
+	private int getQueryType() {
 		return queryType;
 	}
 
-	public void setQueryType(int queryType) {
+	private void setQueryType(int queryType) {
 		this.queryType = queryType;
 	}
 
-	public static void main(String[] args) {
-		;
-	}
-
-	public String[] getTargetColumns() {
+	private String[] getTargetColumns() {
 		return targetColumns;
 	}
 
-	public void setTargetColumns(String... columns) {
+	private void setTargetColumns(String... columns) {
 		this.targetColumns = columns;
 	}
 
-	public String[] getConditions() {
+	private String[] getConditions() {
 		return conditions;
 	}
 
-	public void setConditions(String... conditions) {
+	private void setConditions(String... conditions) {
 		this.conditions = conditions;
 	}
 
@@ -138,7 +132,7 @@ public class GatewayClient {
 	 * 
 	 * @return
 	 */
-	public String generateSelectSQL() {
+	private String generateSelectSQL() {
 		// SELECT [COLUMN_LIST] FROM [TABLE] [CONDITIONS]
 		String table = getTargetTable();
 		String sql = TEMPLATE_SELECT;
@@ -193,7 +187,7 @@ public class GatewayClient {
 	/**
 	 * Create a connection to the gateway and output the result.
 	 */
-	public void execute() {
+	private void execute() {
 		if (getQueryType() == QUERY_TYPE_INSERT) {
 			setSql(generateInsertSQL());
 		} else if (getQueryType() == QUERY_TYPE_SELECT) {
@@ -206,12 +200,11 @@ public class GatewayClient {
 
 		// TraceUtilities.print(getSql());
 
-		String url = getServerURL() + GatewayRequest.PARAM_USERNAME + "="
-				+ getUsername() + "&" + GatewayRequest.PARAM_PASSWORD + "="
-				+ getPassword() + "&" + GatewayRequest.PARAM_QUERY_TYPE + "="
-				+ getQueryType() + "&" + GatewayRequest.PARAM_TARGET_TABLE
-				+ "=" + getTargetTable() + "&" + GatewayRequest.PARAM_SQL + "="
-				+ getSql();
+		String url = getServerURL() + Query.PARAM_USERNAME + "="
+				+ getUsername() + "&" + Query.PARAM_PASSWORD + "="
+				+ getPassword() + "&" + Query.PARAM_QUERY_TYPE + "="
+				+ getQueryType() + "&" + Query.PARAM_TARGET_TABLE + "="
+				+ getTargetTable() + "&" + Query.PARAM_SQL + "=" + getSql();
 
 		url = url.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n").replaceAll(" ",
 				"%20");
@@ -390,19 +383,19 @@ public class GatewayClient {
 		return sql;
 	}
 
-	public String[] getColumnAndValues() {
+	private String[] getColumnAndValues() {
 		return columnAndValues;
 	}
 
-	public void setColumnAndValues(String... columnValue) {
+	private void setColumnAndValues(String... columnValue) {
 		this.columnAndValues = columnValue;
 	}
 
-	public String getRawResponse() {
+	private String getRawResponse() {
 		return rawResponse;
 	}
 
-	public void setRawResponse(String rawResponse) {
+	private void setRawResponse(String rawResponse) {
 		this.rawResponse = rawResponse;
 	}
 
@@ -411,7 +404,7 @@ public class GatewayClient {
 	 * 
 	 * @return
 	 */
-	public List<Map<String, SimpleEntry<String, String>>> select() {
+	private List<Map<String, SimpleEntry<String, String>>> select() {
 		execute();
 		String rowList = getRawResponse();
 		List<Map<String, SimpleEntry<String, String>>> valuesMapList = new ArrayList<Map<String, SimpleEntry<String, String>>>();
@@ -425,9 +418,11 @@ public class GatewayClient {
 			Map<String, SimpleEntry<String, String>> colValuesMap = new HashMap<String, SimpleEntry<String, String>>();
 			String[] columnList = row.split(",");
 			for (String column : columnList) {
-				String columnName = column.split(SEPARATOR_PIECES)[0];
-				String value = column.split(SEPARATOR_PIECES)[1];
-				String dataType = column.split(SEPARATOR_PIECES)[2];
+				String columnName = column
+						.split(PylonController.SEPARATOR_PIECES)[0];
+				String value = column.split(PylonController.SEPARATOR_PIECES)[1];
+				String dataType = column
+						.split(PylonController.SEPARATOR_PIECES)[2];
 				SimpleEntry<String, String> entry = new SimpleEntry<String, String>(
 						value, dataType);
 
@@ -438,33 +433,67 @@ public class GatewayClient {
 		return valuesMapList;
 	}
 
-	public boolean executeUpdate() {
+	private boolean executeUpdate() {
 		execute();
 		String response = getRawResponse().trim();
 		return response.equals("true") ? true : false;
 	}
 
-	public boolean update() {
+	/**
+	 * Execute a MySQL update query.
+	 * 
+	 * @param table
+	 * @param columnsAndValues
+	 * @param conditions
+	 * @return
+	 */
+	public boolean executeMySQLUpdate(String table, String[] columnsAndValues,
+			String[] conditions) {
+		setTargetTable(table);
+		setColumnAndValues(columnsAndValues);
+		setConditions(conditions);
+		setQueryType(QUERY_TYPE_UPDATE);
+
 		return executeUpdate();
 	}
 
-	public boolean delete() {
+	/**
+	 * Execute a MySQL Delete query.
+	 * 
+	 * @param table
+	 * @param conditions
+	 * @return
+	 */
+	public boolean executeMySQLDelete(String table, String[] conditions) {
+		setTargetTable(table);
+		setConditions(conditions);
+		setQueryType(QUERY_TYPE_DELETE);
 		return executeUpdate();
 	}
 
-	public boolean insert() {
+	/**
+	 * Execute a MySQL Insert query.
+	 * 
+	 * @param table
+	 * @param columnsAndValues
+	 * @return
+	 */
+	public boolean executeMySQLInsert(String table, String[] columnsAndValues) {
+		setTargetTable(table);
+		setColumnAndValues(columnsAndValues);
+		setQueryType(QUERY_TYPE_INSERT);
 		return executeUpdate();
 	}
 
-	public String getServerURL() {
+	private String getServerURL() {
 		return serverURL;
 	}
 
-	public void setServerURL(String serverURL) {
+	private void setServerURL(String serverURL) {
 		this.serverURL = serverURL;
 	}
 
-	public boolean executeQuery(String sql) {
+	public boolean executeMySQLQuery(String sql) {
 		setSql(sql);
 		setQueryType(QUERY_TYPE_EXECUTE_QUERY);
 		execute();
@@ -472,7 +501,14 @@ public class GatewayClient {
 		return response.equals("true") ? true : false;
 	}
 
-	public List<Map<String, SimpleEntry<String, String>>> executeSelect(
+	/**
+	 * Execute a MySQL select query.
+	 * 
+	 * @param table
+	 * @param sqlString
+	 * @return
+	 */
+	public List<Map<String, SimpleEntry<String, String>>> executeMySQLSelect(
 			String table, String sqlString) {
 		setTargetTable(table);
 		setSql(sqlString);
@@ -486,7 +522,7 @@ public class GatewayClient {
 	 * @param table
 	 * @return
 	 */
-	public List<String> getColumnList(String table) {
+	public List<String> executeMySQLGetColumns(String table) {
 		setTargetTable(table);
 		setQueryType(QUERY_TYPE_GET_COLUMN_LIST);
 		execute();

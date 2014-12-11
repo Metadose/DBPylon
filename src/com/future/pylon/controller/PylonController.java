@@ -1,4 +1,4 @@
-package com.future.sqlgateway.controller;
+package com.future.pylon.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,10 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.future.sqlgateway.calls.GatewayRequest;
-import com.future.sqlgateway.calls.GatewayResponse;
-import com.future.sqlgateway.client.GatewayClient;
-import com.future.sqlgateway.db.DAO;
+import com.future.pylon.client.Query;
+import com.future.pylon.db.MySQLDAO;
 
 /**
  * Main controller that handles all requests.
@@ -21,27 +19,28 @@ import com.future.sqlgateway.db.DAO;
  * @author Victorio Cebedo II
  * 
  */
-public class Gateway extends HttpServlet {
+public class PylonController extends HttpServlet {
+	public static final String SEPARATOR_PIECES = "::::";
 	public static final String PARAM_RESPONSE = "response";
 	private static final String JSP_EMPTY = "empty.jsp";
 	private static final String JSP_RESPONSE = "response.jsp";
 	private static final long serialVersionUID = 1L;
 
-	public Gateway() {
+	public PylonController() {
 		super();
 	}
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		process(new GatewayRequest(request), new GatewayResponse(response));
+		process(new Query(request), response);
 	}
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		process(new GatewayRequest(request), new GatewayResponse(response));
+		process(new Query(request), response);
 	}
 
-	private void process(GatewayRequest request, GatewayResponse response) {
+	private void process(Query request, HttpServletResponse response) {
 		// Check if request is authorized.
 		// Check if request has valid parameters, i.e., complete.
 
@@ -49,7 +48,7 @@ public class Gateway extends HttpServlet {
 			String targetTable = request.getTargetTable();
 			String sql = request.getSql();
 
-			DAO dao = new DAO();
+			MySQLDAO dao = new MySQLDAO();
 			String responseStr = "";
 
 			// If request is update or delete.
@@ -73,10 +72,10 @@ public class Gateway extends HttpServlet {
 					for (String columnName : row.keySet()) {
 						Object value = row.get(columnName);
 						responseStr += columnName
-								+ GatewayClient.SEPARATOR_PIECES
+								+ SEPARATOR_PIECES
 								+ value.toString().replaceAll(
 										"(\\r|\\n|\\r\\n)+", "\\\\n")
-								+ GatewayClient.SEPARATOR_PIECES
+								+ SEPARATOR_PIECES
 								+ value.getClass().getSimpleName();
 						responseStr += ",";
 					}
@@ -99,7 +98,7 @@ public class Gateway extends HttpServlet {
 	 * @param responseStr
 	 * @param start
 	 */
-	private void respond(GatewayRequest request, GatewayResponse response,
+	private void respond(Query request, HttpServletResponse response,
 			String responseStr) {
 		try {
 			RequestDispatcher dispatcher = request
@@ -119,7 +118,7 @@ public class Gateway extends HttpServlet {
 	 * @param request
 	 * @param response
 	 */
-	private void error(GatewayRequest request, GatewayResponse response) {
+	private void error(Query request, HttpServletResponse response) {
 		try {
 			RequestDispatcher dispatcher = request
 					.getRequestDispatcher(JSP_EMPTY);
