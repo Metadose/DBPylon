@@ -27,29 +27,117 @@ Pylon is a Java-based gateway between a private database and a remote applicatio
 
 * MySQL = 1
 
+
 ### MySQL
 **PylonClient.java Constructor**
 ```java
 public PylonClient(String SERVER_URL, int DB_TYPE_ID, String DB_NAME, String USERNAME, String PASSWORD)
 ```
 
+
 #### Insert
 ```java
 public static void mySQLInsert() {
-	PylonClient client = new PylonClient("http://localhost:8080/tmp/PylonController?", DatabaseMapping.DB_MYSQL, "sqlgateway", "Test1", "Test1");
-
-	String[] columnsAndValues = { "Name='Magallanes'", "BranchID=44", "Details='None'" };
-
+	PylonClient client = new PylonClient(
+		"http://localhost:8080/tmp/PylonController?",
+		DatabaseMapping.DB_MYSQL,
+		"sqlgateway",
+		"Test1",
+		"Test1"
+	);
+	String[] columnsAndValues = {
+		"Name='Magallanes'",
+		"BranchID=44",
+		"Details='None'"
+	};
 	boolean success = client.executeMySQLInsert("branches", columnsAndValues);
-
 	System.out.println(success);
 }
 ```
+
+
 #### Select
+```java
+public static void mySQLSelect() {
+	PylonClient client = new PylonClient(
+		"http://localhost:8080/tmp/PylonController?",
+		DatabaseMapping.DB_MYSQL,
+		"sqlgateway",
+		"Test1",
+		"Test1"
+	);
+	List<Map<String, SimpleEntry<String, String>>> items = client
+			.executeMySQLSelect(
+				"items",
+				"SELECT * FROM items"
+			);
+	System.out.println(items.toString());
+}
+```
+
 
 #### Update
+```java
+public static void mySQLUpdate() {
+	PylonClient client = new PylonClient(
+		"http://localhost:8080/tmp/PylonController?",
+		DatabaseMapping.DB_MYSQL,
+		"sqlgateway",
+		"Test1",
+		"Test1"
+	);
+	String[] columnsAndValues = {
+		"Name='Keyboard'",
+		"Price = 100"
+	};
+	String[] conditions = {
+		"Price < 150",
+		"Deleted = false"
+	};
+	boolean success = client.executeMySQLUpdate(
+				"items",
+				columnsAndValues,
+				conditions
+			);
+	System.out.println(success);
+}
+```
+
 
 #### Delete
+```java
+public static void mySQLDelete() {
+	PylonClient client = new PylonClient(
+		"http://localhost:8080/tmp/PylonController?",
+		DatabaseMapping.DB_MYSQL,
+		"sqlgateway",
+		"Test1",
+		"Test1"
+	);
+	String[] conditions = {
+		"SaleID = 1417419495515",
+		"Name = 'Pencil'"
+	};
+	boolean success = client.executeMySQLDelete(
+				"sales",
+				conditions
+			);
+	System.out.println(success);
+}
+```
+
 
 #### Get Columns List
-
+```java
+public static void mySQLGetColumnList() {
+	PylonClient client = new PylonClient(
+		"http://localhost:8080/tmp/PylonController?",
+		DatabaseMapping.DB_MYSQL,
+		"sqlgateway",
+		"Test1",
+		"Test1"
+	);
+	List<String> columnList = client.executeMySQLGetColumns("branches");
+	System.out.println(columnList.toString());
+}
+```
