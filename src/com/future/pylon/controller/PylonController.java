@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.future.pylon.client.Query;
+import com.future.pylon.db.DatabaseMapping;
 import com.future.pylon.db.MySQLDAO;
-import com.future.pylon.db.MySQLDB;
 import com.future.pylon.util.TraceUtilities;
 
 /**
@@ -45,7 +45,7 @@ public class PylonController extends HttpServlet {
 	private void process(HttpServletRequest request,
 			HttpServletResponse response) {
 		Query query = new Query(request);
-		if (query.getDatabaseType() == MySQLDB.TYPE) {
+		if (query.getDatabaseType() == DatabaseMapping.DB_MYSQL) {
 			processMySQL(query, response);
 		}
 	}
