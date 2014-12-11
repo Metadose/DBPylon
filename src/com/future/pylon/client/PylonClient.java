@@ -40,6 +40,7 @@ public class PylonClient {
 	protected static final int QUERY_TYPE_GET_COLUMN_LIST = 7;
 
 	private String serverURL;
+	private int databaseType;
 	private String databaseName;
 	private String username;
 	private String password;
@@ -51,8 +52,9 @@ public class PylonClient {
 	private String[] columnAndValues;
 	private String[] conditions;
 
-	public PylonClient(String server, String databaseName, String user,
-			String pass) {
+	public PylonClient(String server, int databaseType, String databaseName,
+			String user, String pass) {
+		setDatabaseType(databaseType);
 		setServerURL(server);
 		setDatabaseName(databaseName);
 		setUsername(user);
@@ -194,6 +196,7 @@ public class PylonClient {
 		url += Query.PARAM_USERNAME + "=" + getUsername() + "&";
 		url += Query.PARAM_PASSWORD + "=" + getPassword() + "&";
 		url += Query.PARAM_QUERY_TYPE + "=" + getQueryType() + "&";
+		url += Query.PARAM_DATABASE_TYPE + "=" + getDatabaseType() + "&";
 		url += Query.PARAM_DATABASE_NAME + "=" + getDatabaseName() + "&";
 		url += Query.PARAM_DATABASE_TABLE + "=" + getDatabaseTable() + "&";
 		url += Query.PARAM_SQL + "=" + getSql();
@@ -532,5 +535,13 @@ public class PylonClient {
 
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
+	}
+
+	public int getDatabaseType() {
+		return databaseType;
+	}
+
+	public void setDatabaseType(int databaseType) {
+		this.databaseType = databaseType;
 	}
 }

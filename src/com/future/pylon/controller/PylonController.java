@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.future.pylon.client.Query;
 import com.future.pylon.db.MySQLDAO;
+import com.future.pylon.db.MySQLDB;
 import com.future.pylon.util.TraceUtilities;
 
 /**
@@ -33,15 +34,29 @@ public class PylonController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		process(new Query(request), response);
+		process(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		process(new Query(request), response);
+		process(request, response);
 	}
 
-	private void process(Query request, HttpServletResponse response) {
+	private void process(HttpServletRequest request,
+			HttpServletResponse response) {
+		Query query = new Query(request);
+		if (query.getDatabaseType() == MySQLDB.TYPE) {
+			processMySQL(query, response);
+		}
+	}
+
+	/**
+	 * Process the MySQL request.
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	private void processMySQL(Query request, HttpServletResponse response) {
 		// Check if request is authorized.
 		// Check if request has valid parameters, i.e., complete.
 

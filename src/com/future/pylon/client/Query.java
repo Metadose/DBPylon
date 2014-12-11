@@ -13,6 +13,7 @@ public class Query extends HttpServletRequestWrapper {
 
 	public static final String PARAM_USERNAME = "username";
 	public static final String PARAM_PASSWORD = "password";
+	public static final String PARAM_DATABASE_TYPE = "databaseType";
 	public static final String PARAM_DATABASE_NAME = "databaseName";
 	public static final String PARAM_DATABASE_TABLE = "databaseTable";
 	public static final String PARAM_SQL = "sql";
@@ -20,6 +21,7 @@ public class Query extends HttpServletRequestWrapper {
 
 	private String username;
 	private String password;
+	private int databaseType;
 	private String databaseName;
 	private String databaseTable;
 	private String sql;
@@ -29,6 +31,8 @@ public class Query extends HttpServletRequestWrapper {
 		super(request);
 		setUsername(RequestUtilities.getParameter(request, PARAM_USERNAME));
 		setPassword(RequestUtilities.getParameter(request, PARAM_PASSWORD));
+		setDatabaseType(RequestUtilities.getParameterAsInt(request,
+				PARAM_DATABASE_TYPE));
 		setDatabaseName(RequestUtilities.getParameter(request,
 				PARAM_DATABASE_NAME));
 		setDatabaseTable(RequestUtilities.getParameter(request,
@@ -151,5 +155,13 @@ public class Query extends HttpServletRequestWrapper {
 
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
+	}
+
+	public int getDatabaseType() {
+		return databaseType;
+	}
+
+	public void setDatabaseType(int databaseType) {
+		this.databaseType = databaseType;
 	}
 }
