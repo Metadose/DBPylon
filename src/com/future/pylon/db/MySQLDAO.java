@@ -20,11 +20,14 @@ public class MySQLDAO {
 
 	private Connection connection;
 
-	public MySQLDAO() {
+	public MySQLDAO(String dbName) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			MySQLDB sqlDB = new MySQLDB();
+			Class.forName(sqlDB.getDriver());
 			connection = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/sqlgateway", "root", "root");
+					"jdbc:mysql://" + sqlDB.getUrl() + ":" + sqlDB.getPort()
+							+ "/" + dbName, sqlDB.getUsername(),
+					sqlDB.getPassword());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -54,10 +57,6 @@ public class MySQLDAO {
 			e.printStackTrace();
 		}
 		return columns.trim().substring(0, columns.length() - 1);
-	}
-
-	public static void main(String[] args) {
-		;
 	}
 
 	private Map<String, Object> constructResultMap(

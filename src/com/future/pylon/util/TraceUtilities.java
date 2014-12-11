@@ -4,13 +4,12 @@ import com.sun.jmx.snmp.Timestamp;
 
 public class TraceUtilities {
 
+	public static final boolean isTrace = true;
+
 	public static void print(String string) {
-		Timestamp stamp = new Timestamp(System.currentTimeMillis());
-		System.out.println(stamp.getDate() + " " + string);
+		if (isTrace) {
+			Timestamp stamp = new Timestamp(System.currentTimeMillis());
+			System.out.println(stamp.getDate() + " " + string);
+		}
 	}
-
-	public static void main(String[] args) {
-		print("test");
-	}
-
 }

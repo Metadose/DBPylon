@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.future.pylon.client.Query;
 import com.future.pylon.db.MySQLDAO;
+import com.future.pylon.util.TraceUtilities;
 
 /**
  * Main controller that handles all requests.
@@ -45,29 +46,35 @@ public class PylonController extends HttpServlet {
 		// Check if request has valid parameters, i.e., complete.
 
 		if (request.hasValidParams() && request.isAuthorized()) {
-			String targetTable = request.getTargetTable();
+			String targetTable = request.getDatabaseTable();
 			String sql = request.getSql();
+			String dbName = request.getDatabaseName();
 
-			MySQLDAO dao = new MySQLDAO();
+			MySQLDAO sqlDAO = new MySQLDAO(dbName);
 			String responseStr = "";
+			String traceStr = dbName + " " + targetTable + " "
+					+ request.getQueryType();
 
 			// If request is update or delete.
 			if (request.isInsert() || request.isUpdate() || request.isDelete()
 					|| request.isExecuteQuery()) {
-				boolean success = dao.executeUpdate(sql);
+				boolean success = sqlDAO.executeUpdate(sql);
 				if (!success) {
 					error(request, response);
 				}
 				responseStr = "true";
+				traceStr += " " + responseStr;
+				TraceUtilities.print(traceStr);
 			}
 			// If request is select.
 			else if (request.isSelect() || request.isExecuteSelect()) {
-				List<Map<String, Object>> rowList = dao.executeQuery(
+				List<Map<String, Object>> rowList = sqlDAO.executeQuery(
 						targetTable, sql);
 				if (rowList == null) {
 					error(request, response);
 				}
 
+				// Loop through each row result.
 				for (Map<String, Object> row : rowList) {
 					for (String columnName : row.keySet()) {
 						Object value = row.get(columnName);
@@ -81,10 +88,14 @@ public class PylonController extends HttpServlet {
 					}
 					responseStr += "\n";
 				}
+				traceStr += " " + "true";
+				TraceUtilities.print(traceStr);
 			}
 			// If request is just to get the list of columns in a table.
 			else if (request.isGetColumnList()) {
-				responseStr = dao.getColumnListAsString(targetTable);
+				responseStr = sqlDAO.getColumnListAsString(targetTable);
+				traceStr += " " + responseStr;
+				TraceUtilities.print(traceStr);
 			}
 			respond(request, response, responseStr);
 		}
@@ -119,6 +130,10 @@ public class PylonController extends HttpServlet {
 	 * @param response
 	 */
 	private void error(Query request, HttpServletResponse response) {
+		String dbTable = request.getDatabaseTable();
+		String dbName = request.getDatabaseName();
+		String traceStr = dbName + " " + dbTable + " " + request.getQueryType();
+		TraceUtilities.print(traceStr + " " + "false");
 		try {
 			RequestDispatcher dispatcher = request
 					.getRequestDispatcher(JSP_EMPTY);

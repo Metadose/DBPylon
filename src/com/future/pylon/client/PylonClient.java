@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.future.pylon.controller.PylonController;
+import com.future.pylon.util.TraceUtilities;
 
 public class PylonClient {
 
@@ -39,9 +40,10 @@ public class PylonClient {
 	protected static final int QUERY_TYPE_GET_COLUMN_LIST = 7;
 
 	private String serverURL;
+	private String databaseName;
 	private String username;
 	private String password;
-	private String targetTable;
+	private String databaseTable;
 	private String sql;
 	private String rawResponse;
 	private int queryType;
@@ -49,24 +51,10 @@ public class PylonClient {
 	private String[] columnAndValues;
 	private String[] conditions;
 
-	public PylonClient() {
-		;
-	}
-
-	public PylonClient(String user, String pass, String table, int type) {
-		setUsername(user);
-		setPassword(pass);
-		setTargetTable(table);
-		setQueryType(type);
-	}
-
-	public PylonClient(String user, String pass) {
-		setUsername(user);
-		setPassword(pass);
-	}
-
-	public PylonClient(String server, String user, String pass) {
+	public PylonClient(String server, String databaseName, String user,
+			String pass) {
 		setServerURL(server);
+		setDatabaseName(databaseName);
 		setUsername(user);
 		setPassword(pass);
 	}
@@ -87,12 +75,12 @@ public class PylonClient {
 		this.password = password;
 	}
 
-	private String getTargetTable() {
-		return targetTable;
+	private String getDatabaseTable() {
+		return databaseTable;
 	}
 
-	private void setTargetTable(String targetTable) {
-		this.targetTable = targetTable;
+	private void setDatabaseTable(String targetTable) {
+		this.databaseTable = targetTable;
 	}
 
 	private String getSql() {
@@ -115,6 +103,7 @@ public class PylonClient {
 		return targetColumns;
 	}
 
+	@SuppressWarnings("unused")
 	private void setTargetColumns(String... columns) {
 		this.targetColumns = columns;
 	}
@@ -134,7 +123,7 @@ public class PylonClient {
 	 */
 	private String generateSelectSQL() {
 		// SELECT [COLUMN_LIST] FROM [TABLE] [CONDITIONS]
-		String table = getTargetTable();
+		String table = getDatabaseTable();
 		String sql = TEMPLATE_SELECT;
 		String[] cols = getTargetColumns();
 		String[] conds = getConditions();
@@ -198,13 +187,16 @@ public class PylonClient {
 			setSql(generateDeleteSQL());
 		}
 
-		// TraceUtilities.print(getSql());
+		TraceUtilities.print(getSql() == null ? "null SQL on " + getQueryType()
+				: getSql());
 
-		String url = getServerURL() + Query.PARAM_USERNAME + "="
-				+ getUsername() + "&" + Query.PARAM_PASSWORD + "="
-				+ getPassword() + "&" + Query.PARAM_QUERY_TYPE + "="
-				+ getQueryType() + "&" + Query.PARAM_TARGET_TABLE + "="
-				+ getTargetTable() + "&" + Query.PARAM_SQL + "=" + getSql();
+		String url = getServerURL();
+		url += Query.PARAM_USERNAME + "=" + getUsername() + "&";
+		url += Query.PARAM_PASSWORD + "=" + getPassword() + "&";
+		url += Query.PARAM_QUERY_TYPE + "=" + getQueryType() + "&";
+		url += Query.PARAM_DATABASE_NAME + "=" + getDatabaseName() + "&";
+		url += Query.PARAM_DATABASE_TABLE + "=" + getDatabaseTable() + "&";
+		url += Query.PARAM_SQL + "=" + getSql();
 
 		url = url.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n").replaceAll(" ",
 				"%20");
@@ -238,7 +230,7 @@ public class PylonClient {
 		// INSERT INTO table_name (column1, column2, column3,...) VALUES
 		// (value1, value2, value3,...)
 
-		String table = getTargetTable();
+		String table = getDatabaseTable();
 		String sql = TEMPLATE_INSERT;
 		String[] columnAndVals = getColumnAndValues();
 
@@ -282,7 +274,7 @@ public class PylonClient {
 
 	private String generateDeleteSQL() {
 		// DELETE FROM [TABLE] [CONDITIONS]
-		String table = getTargetTable();
+		String table = getDatabaseTable();
 		String sql = TEMPLATE_DELETE;
 		String[] conds = getConditions();
 
@@ -324,7 +316,7 @@ public class PylonClient {
 		// SET column1=value, column2=value2,...
 		// WHERE some_column=some_value
 
-		String table = getTargetTable();
+		String table = getDatabaseTable();
 		String sql = TEMPLATE_UPDATE;
 		String[] columnAndVals = getColumnAndValues();
 		String[] conds = getConditions();
@@ -449,7 +441,7 @@ public class PylonClient {
 	 */
 	public boolean executeMySQLUpdate(String table, String[] columnsAndValues,
 			String[] conditions) {
-		setTargetTable(table);
+		setDatabaseTable(table);
 		setColumnAndValues(columnsAndValues);
 		setConditions(conditions);
 		setQueryType(QUERY_TYPE_UPDATE);
@@ -465,7 +457,7 @@ public class PylonClient {
 	 * @return
 	 */
 	public boolean executeMySQLDelete(String table, String[] conditions) {
-		setTargetTable(table);
+		setDatabaseTable(table);
 		setConditions(conditions);
 		setQueryType(QUERY_TYPE_DELETE);
 		return executeUpdate();
@@ -479,7 +471,7 @@ public class PylonClient {
 	 * @return
 	 */
 	public boolean executeMySQLInsert(String table, String[] columnsAndValues) {
-		setTargetTable(table);
+		setDatabaseTable(table);
 		setColumnAndValues(columnsAndValues);
 		setQueryType(QUERY_TYPE_INSERT);
 		return executeUpdate();
@@ -510,7 +502,7 @@ public class PylonClient {
 	 */
 	public List<Map<String, SimpleEntry<String, String>>> executeMySQLSelect(
 			String table, String sqlString) {
-		setTargetTable(table);
+		setDatabaseTable(table);
 		setSql(sqlString);
 		setQueryType(QUERY_TYPE_EXECUTE_SELECT);
 		return select();
@@ -523,7 +515,7 @@ public class PylonClient {
 	 * @return
 	 */
 	public List<String> executeMySQLGetColumns(String table) {
-		setTargetTable(table);
+		setDatabaseTable(table);
 		setQueryType(QUERY_TYPE_GET_COLUMN_LIST);
 		execute();
 
@@ -532,5 +524,13 @@ public class PylonClient {
 			columnList.add(column.trim());
 		}
 		return columnList;
+	}
+
+	public String getDatabaseName() {
+		return databaseName;
+	}
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
 	}
 }

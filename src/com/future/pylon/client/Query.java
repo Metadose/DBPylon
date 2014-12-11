@@ -13,13 +13,15 @@ public class Query extends HttpServletRequestWrapper {
 
 	public static final String PARAM_USERNAME = "username";
 	public static final String PARAM_PASSWORD = "password";
-	public static final String PARAM_TARGET_TABLE = "targetTable";
+	public static final String PARAM_DATABASE_NAME = "databaseName";
+	public static final String PARAM_DATABASE_TABLE = "databaseTable";
 	public static final String PARAM_SQL = "sql";
 	public static final String PARAM_QUERY_TYPE = "queryType";
 
 	private String username;
 	private String password;
-	private String targetTable;
+	private String databaseName;
+	private String databaseTable;
 	private String sql;
 	private int queryType;
 
@@ -27,8 +29,10 @@ public class Query extends HttpServletRequestWrapper {
 		super(request);
 		setUsername(RequestUtilities.getParameter(request, PARAM_USERNAME));
 		setPassword(RequestUtilities.getParameter(request, PARAM_PASSWORD));
-		setTargetTable(RequestUtilities.getParameter(request,
-				PARAM_TARGET_TABLE));
+		setDatabaseName(RequestUtilities.getParameter(request,
+				PARAM_DATABASE_NAME));
+		setDatabaseTable(RequestUtilities.getParameter(request,
+				PARAM_DATABASE_TABLE));
 		setSql(RequestUtilities.getParameter(request, PARAM_SQL));
 		setQueryType(RequestUtilities.getParameterAsInt(request,
 				PARAM_QUERY_TYPE));
@@ -38,12 +42,15 @@ public class Query extends HttpServletRequestWrapper {
 		;
 	}
 
+	/**
+	 * Is the request authorized?<br>
+	 * Check in database if the username and password are present.
+	 * 
+	 * @return
+	 */
 	public boolean isAuthorized() {
-		String usr = getUsername();
-		String pw = getPassword();
-
-		MySQLDAO dao = new MySQLDAO();
-		String creds = dao.getCredentials(usr, pw);
+		MySQLDAO dao = new MySQLDAO(getDatabaseName());
+		String creds = dao.getCredentials(getUsername(), getPassword());
 		if (creds.isEmpty()) {
 			return false;
 		}
@@ -130,12 +137,19 @@ public class Query extends HttpServletRequestWrapper {
 		this.queryType = queryType;
 	}
 
-	public String getTargetTable() {
-		return targetTable;
+	public String getDatabaseTable() {
+		return databaseTable;
 	}
 
-	public void setTargetTable(String targetTable) {
-		this.targetTable = targetTable;
+	public void setDatabaseTable(String targetTable) {
+		this.databaseTable = targetTable;
 	}
 
+	public String getDatabaseName() {
+		return databaseName;
+	}
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
 }
