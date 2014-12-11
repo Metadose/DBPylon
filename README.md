@@ -1,6 +1,6 @@
 # Pylon
 Pylon is a Java-based gateway between a private database and a remote application.
-
+![alt text](https://github.com/cebedovii/Pylon/blob/master/resources/architecture.jpg)
 
 ## Tested Servers
 1. Apache Tomcat 6.0
