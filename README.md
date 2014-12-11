@@ -28,14 +28,24 @@ Pylon is a Java-based gateway between a private database and a remote applicatio
 * MySQL = 1
 
 
-### MySQL
-**PylonClient.java Constructor**
+### Constructor
 ```java
-public PylonClient(String SERVER_URL, int DB_TYPE_ID, String DB_NAME, String USERNAME, String PASSWORD)
+// PylonClient(String SERVER_URL, int DB_TYPE_ID, String DB_NAME, String USERNAME, String PASSWORD)
+// Example:
+PylonClient client = new PylonClient(
+	"http://localhost:8080/tmp/PylonController?",
+	DatabaseMapping.DB_MYSQL,
+	"sqlgateway",
+	"Test1",
+	"Test1"
+);
 ```
 
 
 #### Insert
+```sql
+INSERT INTO branches (Name, BranchID, Details) VALUES ('Magallanes', 44, 'None');
+```
 ```java
 public static void mySQLInsert() {
 	PylonClient client = new PylonClient(
@@ -57,6 +67,9 @@ public static void mySQLInsert() {
 
 
 #### Select
+```sql
+SELECT * FROM items;
+```
 ```java
 public static void mySQLSelect() {
 	PylonClient client = new PylonClient(
@@ -77,6 +90,9 @@ public static void mySQLSelect() {
 
 
 #### Update
+```sql
+UPDATE items SET Name='Keyboard', Price = 100 WHERE Price < 150 AND Deleted = false;
+```
 ```java
 public static void mySQLUpdate() {
 	PylonClient client = new PylonClient(
@@ -105,6 +121,9 @@ public static void mySQLUpdate() {
 
 
 #### Delete
+```sql
+DELETE FROM sales WHERE SaleID = 1417419495515 AND Name = 'Pencil';
+```
 ```java
 public static void mySQLDelete() {
 	PylonClient client = new PylonClient(
