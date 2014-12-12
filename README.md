@@ -2,6 +2,16 @@
 DBPylon is a Java-based gateway between a private database and a remote application.
 ![alt text](https://github.com/cebedovii/Pylon/blob/master/resources/sysarchitecture.jpg)
 
+
+## Why
+1. You have a project that the `DB` needs to be in the `cloud`.
+2. You check on some `PaaS providers`, and saw some `Free instances`.
+3. You registered and found out that the Free instances were `really slow`.
+4. So, you decided to just use instances for your DB and `deploy` the App `locally`.
+5. But then, you realized that the only way you can get data from your PaaS was through `port-forwarding`.
+6. So, you ask yourself "What if there was like a `gateway` that could pass data from `App to DB` and vice-versa?".
+
+
 ## Tested Servers
 1. Apache Tomcat 6.0
 2. JBoss 6.0
