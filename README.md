@@ -1,5 +1,5 @@
-# Pylon
-Pylon is a Java-based gateway between a private database and a remote application.
+# DBPylon
+DBPylon is a Java-based gateway between a private database and a remote application.
 ![alt text](https://github.com/cebedovii/Pylon/blob/master/resources/sysarchitecture.jpg)
 
 ## Tested Servers
