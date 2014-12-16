@@ -7,7 +7,7 @@ import java.util.Map;
 import com.future.pylon.client.PylonClient;
 import com.future.pylon.db.DatabaseMapping;
 
-public class Sample {
+public class SampleMySQL {
 
 	public static void main(String[] args) {
 		mySQLInsert();

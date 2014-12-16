@@ -529,19 +529,19 @@ public class PylonClient {
 		return columnList;
 	}
 
-	public String getDatabaseName() {
+	private String getDatabaseName() {
 		return databaseName;
 	}
 
-	public void setDatabaseName(String databaseName) {
+	private void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
 
-	public int getDatabaseType() {
+	private int getDatabaseType() {
 		return databaseType;
 	}
 
-	public void setDatabaseType(int databaseType) {
+	private void setDatabaseType(int databaseType) {
 		this.databaseType = databaseType;
 	}
 }
