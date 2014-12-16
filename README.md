@@ -1,5 +1,5 @@
 # DBPylon
-DBPylon is a Java-based gateway between a private database and a remote application.
+DBPylon is a Java-based `gateway` between a private database and a remote application.
 ![alt text](https://github.com/VicCebedo/DBPylon/blob/master/docs/sysarchitecture.jpg)
 
 
@@ -40,7 +40,13 @@ DBPylon is a Java-based gateway between a private database and a remote applicat
 
 ### Constructor
 ```java
-// PylonClient(String SERVER_URL, int DB_TYPE_ID, String DB_NAME, String USERNAME, String PASSWORD)
+PylonClient(String SERVER_URL,
+		int DB_TYPE_ID,
+		String DB_NAME,
+		String USERNAME,
+		String PASSWORD
+	)
+
 // Example:
 PylonClient client = new PylonClient(
 	"http://localhost:8080/tmp/PylonController?",
