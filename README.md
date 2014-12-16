@@ -1,6 +1,6 @@
 # DBPylon
 DBPylon is a Java-based gateway between a private database and a remote application.
-![alt text](https://github.com/cebedovii/Pylon/blob/master/resources/sysarchitecture.jpg)
+![alt text](https://github.com/VicCebedo/DBPylon/blob/master/docs/sysarchitecture.jpg)
 
 
 ## Why
